@@ -24,6 +24,9 @@ app.use(cors({
   origin: "*"
 }));
 
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'pug');  // Use 'pug' instead of 'jade' if you're using newer versions
+
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -47,7 +50,7 @@ app.use(function (err, req, res, next) {
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
   res.status(err.status || 500);
-  res.json({ error: err.message });
+  res.render('error');
 });
 
 const port = process.env.PORT || 2556;  // Ensure you use an environment variable or fallback to 2556
