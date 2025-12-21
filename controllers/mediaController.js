@@ -1,7 +1,5 @@
 const { uploadImage, uploadVideo, deleteResource, getResourceDetails, getOptimizedImageUrl, getVideoThumbnail } = require('../service/cloudinary');
 const response = require('../responsecode/response');
-const fs = require('fs');
-const path = require('path');
 
 // ==================== UPLOAD IMAGE ====================
 // POST /api/v1/media/upload-image
@@ -12,10 +10,9 @@ exports.uploadImageController = async (req, res) => {
         }
 
         const { folder } = req.body; // Optional custom folder
-        const filePath = req.file.path;
-
-        // Upload to Cloudinary
-        const result = await uploadImage(filePath, folder);
+        
+        // Use buffer for memory storage (no local file)
+        const result = await uploadImage(req.file.buffer, folder);
 
         return response.successResponse(res, 'Image uploaded successfully', result.data);
 
@@ -34,10 +31,9 @@ exports.uploadVideoController = async (req, res) => {
         }
 
         const { folder } = req.body; // Optional custom folder
-        const filePath = req.file.path;
-
-        // Upload to Cloudinary
-        const result = await uploadVideo(filePath, folder);
+        
+        // Use buffer for memory storage (no local file)
+        const result = await uploadVideo(req.file.buffer, folder);
 
         // Generate thumbnail
         const thumbnail = getVideoThumbnail(result.data.public_id, 2); // Thumbnail at 2 seconds
@@ -62,7 +58,9 @@ exports.uploadMultipleImagesController = async (req, res) => {
         }
 
         const { folder } = req.body; // Optional custom folder
-        const uploadPromises = req.files.map(file => uploadImage(file.path, folder));
+        
+        // Use buffers for memory storage (no local files)
+        const uploadPromises = req.files.map(file => uploadImage(file.buffer, folder));
 
         // Upload all images concurrently
         const results = await Promise.all(uploadPromises);

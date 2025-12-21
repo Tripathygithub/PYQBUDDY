@@ -1,27 +1,9 @@
 const multer = require('multer');
 const path = require('path');
 
-// Configure storage for image uploads
-const imageStorage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, 'uploads/images/');
-    },
-    filename: function (req, file, cb) {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, 'image-' + uniqueSuffix + path.extname(file.originalname));
-    }
-});
-
-// Configure storage for video uploads
-const videoStorage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, 'uploads/videos/');
-    },
-    filename: function (req, file, cb) {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, 'video-' + uniqueSuffix + path.extname(file.originalname));
-    }
-});
+// Use memory storage for cloud platforms (Render, Heroku, etc.)
+// Files are stored in memory as Buffer instead of disk
+const memoryStorage = multer.memoryStorage();
 
 // File filter for images
 const imageFileFilter = (req, file, cb) => {
@@ -47,7 +29,7 @@ const videoFileFilter = (req, file, cb) => {
 
 // Multer upload middleware for images
 const uploadImage = multer({
-    storage: imageStorage,
+    storage: memoryStorage,
     fileFilter: imageFileFilter,
     limits: {
         fileSize: 10 * 1024 * 1024 // 10MB limit for images
@@ -56,7 +38,7 @@ const uploadImage = multer({
 
 // Multer upload middleware for videos
 const uploadVideo = multer({
-    storage: videoStorage,
+    storage: memoryStorage,
     fileFilter: videoFileFilter,
     limits: {
         fileSize: 100 * 1024 * 1024 // 100MB limit for videos
@@ -65,7 +47,7 @@ const uploadVideo = multer({
 
 // Multer upload middleware for multiple images
 const uploadMultipleImages = multer({
-    storage: imageStorage,
+    storage: memoryStorage,
     fileFilter: imageFileFilter,
     limits: {
         fileSize: 10 * 1024 * 1024, // 10MB per file

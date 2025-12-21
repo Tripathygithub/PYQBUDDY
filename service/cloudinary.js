@@ -10,14 +10,20 @@ cloudinary.config({
 
 /**
  * Upload image to Cloudinary
- * @param {String} filePath - Local file path
+ * @param {String|Buffer} filePathOrBuffer - Local file path or Buffer
  * @param {String} folder - Cloudinary folder name (optional)
  * @param {Object} options - Additional upload options
  * @returns {Promise<Object>} Upload result
  */
-const uploadImage = async (filePath, folder = 'pyqbuddy/images', options = {}) => {
+const uploadImage = async (filePathOrBuffer, folder = 'pyqbuddy/images', options = {}) => {
     try {
-        const result = await cloudinary.uploader.upload(filePath, {
+        // If it's a Buffer, convert to base64 data URI
+        let uploadSource = filePathOrBuffer;
+        if (Buffer.isBuffer(filePathOrBuffer)) {
+            uploadSource = `data:image/png;base64,${filePathOrBuffer.toString('base64')}`;
+        }
+
+        const result = await cloudinary.uploader.upload(uploadSource, {
             folder: folder,
             resource_type: 'image',
             transformation: [
@@ -28,9 +34,9 @@ const uploadImage = async (filePath, folder = 'pyqbuddy/images', options = {}) =
             ...options
         });
 
-        // Delete local file after upload
-        if (fs.existsSync(filePath)) {
-            fs.unlinkSync(filePath);
+        // Delete local file after upload (only if it's a file path)
+        if (typeof filePathOrBuffer === 'string' && fs.existsSync(filePathOrBuffer)) {
+            fs.unlinkSync(filePathOrBuffer);
         }
 
         return {
@@ -46,9 +52,9 @@ const uploadImage = async (filePath, folder = 'pyqbuddy/images', options = {}) =
             }
         };
     } catch (error) {
-        // Delete local file on error
-        if (fs.existsSync(filePath)) {
-            fs.unlinkSync(filePath);
+        // Delete local file on error (only if it's a file path)
+        if (typeof filePathOrBuffer === 'string' && fs.existsSync(filePathOrBuffer)) {
+            fs.unlinkSync(filePathOrBuffer);
         }
         throw error;
     }
@@ -56,14 +62,20 @@ const uploadImage = async (filePath, folder = 'pyqbuddy/images', options = {}) =
 
 /**
  * Upload video to Cloudinary
- * @param {String} filePath - Local file path
+ * @param {String|Buffer} filePathOrBuffer - Local file path or Buffer
  * @param {String} folder - Cloudinary folder name (optional)
  * @param {Object} options - Additional upload options
  * @returns {Promise<Object>} Upload result
  */
-const uploadVideo = async (filePath, folder = 'pyqbuddy/videos', options = {}) => {
+const uploadVideo = async (filePathOrBuffer, folder = 'pyqbuddy/videos', options = {}) => {
     try {
-        const result = await cloudinary.uploader.upload(filePath, {
+        // If it's a Buffer, convert to base64 data URI
+        let uploadSource = filePathOrBuffer;
+        if (Buffer.isBuffer(filePathOrBuffer)) {
+            uploadSource = `data:video/mp4;base64,${filePathOrBuffer.toString('base64')}`;
+        }
+
+        const result = await cloudinary.uploader.upload(uploadSource, {
             folder: folder,
             resource_type: 'video',
             transformation: [
@@ -79,9 +91,9 @@ const uploadVideo = async (filePath, folder = 'pyqbuddy/videos', options = {}) =
             ...options
         });
 
-        // Delete local file after upload
-        if (fs.existsSync(filePath)) {
-            fs.unlinkSync(filePath);
+        // Delete local file after upload (only if it's a file path)
+        if (typeof filePathOrBuffer === 'string' && fs.existsSync(filePathOrBuffer)) {
+            fs.unlinkSync(filePathOrBuffer);
         }
 
         return {
@@ -99,9 +111,9 @@ const uploadVideo = async (filePath, folder = 'pyqbuddy/videos', options = {}) =
             }
         };
     } catch (error) {
-        // Delete local file on error
-        if (fs.existsSync(filePath)) {
-            fs.unlinkSync(filePath);
+        // Delete local file on error (only if it's a file path)
+        if (typeof filePathOrBuffer === 'string' && fs.existsSync(filePathOrBuffer)) {
+            fs.unlinkSync(filePathOrBuffer);
         }
         throw error;
     }
