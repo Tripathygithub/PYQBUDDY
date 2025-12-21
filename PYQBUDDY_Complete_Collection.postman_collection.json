@@ -1,0 +1,1020 @@
+{
+	"info": {
+		"_postman_id": "pyqbuddy-complete-collection",
+		"name": "PYQBUDDY - Complete API Collection",
+		"description": "Complete API collection for PYQBUDDY including Authentication, Question Search, Subject Management, CSV Upload, and Admin Operations",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Public - Question Search",
+			"item": [
+				{
+					"name": "Search All Questions",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/questions/search",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "questions", "search"]
+						},
+						"description": "Search all questions with default pagination (page=1, limit=50)"
+					}
+				},
+				{
+					"name": "Search by Keyword",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/questions/search?keyword=constitution",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "questions", "search"],
+							"query": [
+								{"key": "keyword", "value": "constitution"}
+							]
+						},
+						"description": "Search questions by keyword (max 200 characters)"
+					}
+				},
+				{
+					"name": "Search with Multiple Filters",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/questions/search?year=2021&year=2022&examType=prelims&subject=Polity&difficulty=medium&page=1&limit=20",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "questions", "search"],
+							"query": [
+								{"key": "year", "value": "2021"},
+								{"key": "year", "value": "2022"},
+								{"key": "examType", "value": "prelims"},
+								{"key": "subject", "value": "Polity"},
+								{"key": "difficulty", "value": "medium"},
+								{"key": "page", "value": "1"},
+								{"key": "limit", "value": "20"}
+							]
+						},
+						"description": "Search with multiple filters: years, examType, subject, difficulty"
+					}
+				},
+				{
+					"name": "Search with Topic Filter",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/questions/search?subject=Economy&topic=GDP&hasAnswer=true",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "questions", "search"],
+							"query": [
+								{"key": "subject", "value": "Economy"},
+								{"key": "topic", "value": "GDP"},
+								{"key": "hasAnswer", "value": "true"}
+							]
+						},
+						"description": "Filter by subject, topic, and questions with answers only"
+					}
+				},
+				{
+					"name": "Search with Sorting",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/questions/search?sortBy=year&sortOrder=desc&limit=10",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "questions", "search"],
+							"query": [
+								{"key": "sortBy", "value": "year"},
+								{"key": "sortOrder", "value": "desc"},
+								{"key": "limit", "value": "10"}
+							]
+						},
+						"description": "Sort by year (desc), viewCount, or createdAt"
+					}
+				},
+				{
+					"name": "Get Filter Options",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/questions/filters/options",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "questions", "filters", "options"]
+						},
+						"description": "Get available filter options (years, examTypes, subjects with topics, difficulties)"
+					}
+				},
+				{
+					"name": "Get Statistics",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/questions/statistics",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "questions", "statistics"]
+						},
+						"description": "Get statistics (total questions, by year, by exam type, by subject, with answers)"
+					}
+				},
+				{
+					"name": "Get Random Question",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/questions/random?examType=prelims&subject=Polity",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "questions", "random"],
+							"query": [
+								{"key": "examType", "value": "prelims"},
+								{"key": "subject", "value": "Polity"}
+							]
+						},
+						"description": "Get a random question (optional filters: examType, subject)"
+					}
+				},
+				{
+					"name": "Get Question by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/questions/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "questions", ":id"],
+							"variable": [
+								{"key": "id", "value": ""}
+							]
+						},
+						"description": "Get single question details by ID (increments viewCount)"
+					}
+				},
+				{
+					"name": "Get All Subjects",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/questions/subjects/all",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "questions", "subjects", "all"]
+						},
+						"description": "Get all subjects with topics and subtopics"
+					}
+				},
+				{
+					"name": "Get Topics for Subject",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/questions/subjects/:name/topics",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "questions", "subjects", ":name", "topics"],
+							"variable": [
+								{"key": "name", "value": "Polity"}
+							]
+						},
+						"description": "Get topics and subtopics for a specific subject"
+					}
+				}
+			],
+			"description": "Public endpoints for searching and viewing questions (no authentication required)"
+		},
+		{
+			"name": "Admin - Question CRUD",
+			"item": [
+				{
+					"name": "Create Question",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{"key": "token", "value": "{{accessToken}}", "type": "string"}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"year\": 2024,\n  \"examType\": \"prelims\",\n  \"subject\": \"Polity\",\n  \"topic\": \"Constitution\",\n  \"subTopic\": \"Fundamental Rights\",\n  \"questionText\": \"Which Article of the Indian Constitution deals with equality before law?\",\n  \"answerText\": \"Article 14 provides equality before law and equal protection of laws.\",\n  \"explanation\": \"Article 14 is a fundamental right under Part III of the Constitution.\",\n  \"difficulty\": \"medium\",\n  \"marks\": 2,\n  \"keywords\": [\"equality\", \"Article 14\", \"fundamental rights\"]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/admin/questions",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "admin", "questions"]
+						},
+						"description": "Create a new question (admin only, requires authentication)"
+					}
+				},
+				{
+					"name": "Update Question",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{"key": "token", "value": "{{accessToken}}", "type": "string"}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"questionText\": \"Updated question text\",\n  \"answerText\": \"Updated answer\",\n  \"difficulty\": \"hard\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/admin/questions/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "admin", "questions", ":id"],
+							"variable": [
+								{"key": "id", "value": ""}
+							]
+						},
+						"description": "Update question (admin only)"
+					}
+				},
+				{
+					"name": "Delete Question",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{"key": "token", "value": "{{accessToken}}", "type": "string"}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/admin/questions/:id",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "admin", "questions", ":id"],
+							"variable": [
+								{"key": "id", "value": ""}
+							]
+						},
+						"description": "Soft delete question (sets isActive to false)"
+					}
+				},
+				{
+					"name": "Bulk Delete Questions",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{"key": "token", "value": "{{accessToken}}", "type": "string"}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"ids\": [\"questionId1\", \"questionId2\", \"questionId3\"]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/admin/questions/bulk-delete",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "admin", "questions", "bulk-delete"]
+						},
+						"description": "Delete multiple questions at once (1-100 ids)"
+					}
+				},
+				{
+					"name": "Verify Question",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{"key": "token", "value": "{{accessToken}}", "type": "string"}
+							]
+						},
+						"method": "PATCH",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/admin/questions/:id/verify",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "admin", "questions", ":id", "verify"],
+							"variable": [
+								{"key": "id", "value": ""}
+							]
+						},
+						"description": "Mark question as verified (admin only)"
+					}
+				},
+				{
+					"name": "Get Questions Without Answers",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{"key": "token", "value": "{{accessToken}}", "type": "string"}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/admin/questions/without-answers?page=1&limit=50",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "admin", "questions", "without-answers"],
+							"query": [
+								{"key": "page", "value": "1"},
+								{"key": "limit", "value": "50"}
+							]
+						},
+						"description": "Get all questions without answers (for content completion)"
+					}
+				}
+			],
+			"description": "Admin CRUD operations for questions (requires authentication)"
+		},
+		{
+			"name": "Admin - CSV Upload",
+			"item": [
+				{
+					"name": "Upload and Validate CSV",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{"key": "token", "value": "{{accessToken}}", "type": "string"}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": ""
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/admin/questions/upload-csv",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "admin", "questions", "upload-csv"]
+						},
+						"description": "Upload CSV/Excel file, validate data, and get preview (max 10MB, .csv/.xlsx/.xls only)"
+					}
+				},
+				{
+					"name": "Confirm Import",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{"key": "token", "value": "{{accessToken}}", "type": "string"}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"tempFileName\": \"temp_1234567890_questions.json\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/admin/questions/confirm-import",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "admin", "questions", "confirm-import"]
+						},
+						"description": "Confirm and import validated questions from temporary file"
+					}
+				},
+				{
+					"name": "Cancel Import",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{"key": "token", "value": "{{accessToken}}", "type": "string"}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"tempFileName\": \"temp_1234567890_questions.json\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/admin/questions/cancel-import",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "admin", "questions", "cancel-import"]
+						},
+						"description": "Cancel import and delete temporary file"
+					}
+				},
+				{
+					"name": "Download CSV Template",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/admin/questions/download-template",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "admin", "questions", "download-template"]
+						},
+						"description": "Download CSV template with sample data"
+					}
+				},
+				{
+					"name": "Download Excel Template",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/admin/questions/download-template-excel",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "admin", "questions", "download-template-excel"]
+						},
+						"description": "Download Excel template with sample data"
+					}
+				},
+				{
+					"name": "Get Upload History",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{"key": "token", "value": "{{accessToken}}", "type": "string"}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/admin/questions/upload-history?page=1&limit=20",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "admin", "questions", "upload-history"],
+							"query": [
+								{"key": "page", "value": "1"},
+								{"key": "limit", "value": "20"}
+							]
+						},
+						"description": "Get upload history with pagination"
+					}
+				}
+			],
+			"description": "CSV/Excel upload endpoints for bulk question import"
+		},
+		{
+			"name": "Admin - Subject Management",
+			"item": [
+				{
+					"name": "Seed Subjects",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{"key": "token", "value": "{{accessToken}}", "type": "string"}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/admin/subjects/seed",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "admin", "subjects", "seed"]
+						},
+						"description": "Seed 10 subjects with topics and subtopics (one-time setup)"
+					}
+				}
+			],
+			"description": "Subject management endpoints"
+		},
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Register User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.success && jsonData.data.tokens) {",
+									"        pm.environment.set('accessToken', jsonData.data.tokens.accessToken);",
+									"        pm.environment.set('refreshToken', jsonData.data.tokens.refreshToken);",
+									"        pm.environment.set('userId', jsonData.data.user.id);",
+									"    }",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"admin@pyqbuddy.com\",\n  \"name\": \"Admin User\",\n  \"password\": \"Admin@123\",\n  \"role\": \"admin\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/auth/register",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "auth", "register"]
+						},
+						"description": "Register new user (role: 'user' or 'admin')"
+					}
+				},
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.success && jsonData.data.tokens) {",
+									"        pm.environment.set('accessToken', jsonData.data.tokens.accessToken);",
+									"        pm.environment.set('refreshToken', jsonData.data.tokens.refreshToken);",
+									"        pm.environment.set('userId', jsonData.data.user.id);",
+									"    }",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"admin@pyqbuddy.com\",\n  \"password\": \"Admin@123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/auth/login",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "auth", "login"]
+						},
+						"description": "Login (auto-saves tokens to environment)"
+					}
+				},
+				{
+					"name": "Refresh Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.success && jsonData.data.tokens) {",
+									"        pm.environment.set('accessToken', jsonData.data.tokens.accessToken);",
+									"        pm.environment.set('refreshToken', jsonData.data.tokens.refreshToken);",
+									"    }",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/auth/refresh",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "auth", "refresh"]
+						},
+						"description": "Refresh access token"
+					}
+				},
+				{
+					"name": "Get Profile",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{"key": "token", "value": "{{accessToken}}", "type": "string"}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/auth/me",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "auth", "me"]
+						},
+						"description": "Get current user profile"
+					}
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/auth/logout",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "auth", "logout"]
+						},
+						"description": "Logout from current device"
+					}
+				},
+				{
+					"name": "Logout All Devices",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{"key": "token", "value": "{{accessToken}}", "type": "string"}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/auth/logout-all",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "auth", "logout-all"]
+						},
+						"description": "Logout from all devices"
+					}
+				}
+			],
+			"description": "Authentication endpoints"
+		},
+		{
+			"name": "User Management",
+			"item": [
+				{
+					"name": "Update Profile",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{"key": "token", "value": "{{accessToken}}", "type": "string"}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Updated Name\",\n  \"email\": \"newemail@example.com\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/user/profile",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "user", "profile"]
+						},
+						"description": "Update user profile"
+					}
+				},
+				{
+					"name": "Change Password",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{"key": "token", "value": "{{accessToken}}", "type": "string"}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"currentPassword\": \"Admin@123\",\n  \"newPassword\": \"NewPassword@456\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/user/change-password",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "user", "change-password"]
+						},
+						"description": "Change password"
+					}
+				},
+				{
+					"name": "Get User by ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{"key": "token", "value": "{{accessToken}}", "type": "string"}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/user/{{userId}}",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "user", "{{userId}}"]
+						},
+						"description": "Get user by ID"
+					}
+				},
+				{
+					"name": "Get All Users (Admin)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{"key": "token", "value": "{{accessToken}}", "type": "string"}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/user/all",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "user", "all"]
+						},
+						"description": "Get all users (admin only)"
+					}
+				},
+				{
+					"name": "Delete Account",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{"key": "token", "value": "{{accessToken}}", "type": "string"}
+							]
+						},
+						"method": "DELETE",
+						"header": [
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"password\": \"Admin@123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/user/account",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "user", "account"]
+						},
+						"description": "Delete account (soft delete)"
+					}
+				}
+			],
+			"description": "User management endpoints"
+		},
+		{
+			"name": "Media Upload - Images & Videos",
+			"item": [
+				{
+					"name": "Upload Single Image",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{"key": "token", "value": "{{accessToken}}", "type": "string"}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "image",
+									"type": "file",
+									"src": ""
+								},
+								{
+									"key": "folder",
+									"value": "pyqbuddy/questions",
+									"type": "text",
+									"description": "Optional: Custom Cloudinary folder"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/media/upload-image",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "media", "upload-image"]
+						},
+						"description": "Upload single image to Cloudinary (Max 10MB, Formats: JPEG, PNG, GIF, WebP, SVG)"
+					}
+				},
+				{
+					"name": "Upload Video",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{"key": "token", "value": "{{accessToken}}", "type": "string"}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "video",
+									"type": "file",
+									"src": ""
+								},
+								{
+									"key": "folder",
+									"value": "pyqbuddy/explanations",
+									"type": "text",
+									"description": "Optional: Custom Cloudinary folder"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/media/upload-video",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "media", "upload-video"]
+						},
+						"description": "Upload video to Cloudinary with auto-thumbnail (Max 100MB, Formats: MP4, MPEG, MOV, AVI, WebM)"
+					}
+				},
+				{
+					"name": "Upload Multiple Images",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{"key": "token", "value": "{{accessToken}}", "type": "string"}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "images",
+									"type": "file",
+									"src": "",
+									"description": "Select multiple files (max 10)"
+								},
+								{
+									"key": "images",
+									"type": "file",
+									"src": "",
+									"description": "Add more files if needed"
+								},
+								{
+									"key": "folder",
+									"value": "pyqbuddy/gallery",
+									"type": "text",
+									"description": "Optional: Custom Cloudinary folder"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/media/upload-multiple-images",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "media", "upload-multiple-images"]
+						},
+						"description": "Upload multiple images at once (Max 10 files, 10MB each)"
+					}
+				},
+				{
+					"name": "Delete Media",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{"key": "token", "value": "{{accessToken}}", "type": "string"}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/media/delete/pyqbuddy%2Fimages%2Fimage-123456?resourceType=image",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "media", "delete", "pyqbuddy%2Fimages%2Fimage-123456"],
+							"query": [
+								{
+									"key": "resourceType",
+									"value": "image",
+									"description": "Type: 'image' or 'video'"
+								}
+							]
+						},
+						"description": "Delete media from Cloudinary (Admin only). Note: URL-encode the publicId (/ becomes %2F)"
+					}
+				},
+				{
+					"name": "Get Media Details",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{"key": "token", "value": "{{accessToken}}", "type": "string"}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/media/details/pyqbuddy%2Fimages%2Fimage-123456?resourceType=image",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "media", "details", "pyqbuddy%2Fimages%2Fimage-123456"],
+							"query": [
+								{
+									"key": "resourceType",
+									"value": "image",
+									"description": "Type: 'image' or 'video'"
+								}
+							]
+						},
+						"description": "Get detailed information about a media file from Cloudinary"
+					}
+				},
+				{
+					"name": "Get Optimized Image URL",
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"publicId\": \"pyqbuddy/images/my-image\",\n  \"width\": 800,\n  \"height\": 600,\n  \"crop\": \"fill\",\n  \"quality\": \"auto\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/media/optimized-url",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "media", "optimized-url"]
+						},
+						"description": "Generate optimized/responsive image URL with custom transformations (No auth required). Crop modes: fill, fit, scale, crop, thumb, pad"
+					}
+				},
+				{
+					"name": "Get Video Thumbnail",
+					"request": {
+						"method": "POST",
+						"header": [
+							{"key": "Content-Type", "value": "application/json"}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"publicId\": \"pyqbuddy/videos/my-video\",\n  \"time\": 5\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/media/video-thumbnail",
+							"host": ["{{baseUrl}}"],
+							"path": ["api", "v1", "media", "video-thumbnail"]
+						},
+						"description": "Generate video thumbnail URL at specific timestamp (No auth required). Time in seconds, default is 2."
+					}
+				}
+			],
+			"description": "Image and video upload endpoints with Cloudinary integration"
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:9235",
+			"type": "string"
+		},
+		{
+			"key": "accessToken",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "refreshToken",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "userId",
+			"value": "",
+			"type": "string"
+		}
+	]
+}

@@ -115,6 +115,8 @@ const optionalAuth = async (req, res, next) => {
 module.exports = {
     middleware: authMiddleware,
     authMiddleware,
+    authenticate: authMiddleware, // Alias for consistency
     checkRole,
-    optionalAuth
+    optionalAuth,
+    isAdmin: checkRole(['admin']) // Admin-only middleware
 };
