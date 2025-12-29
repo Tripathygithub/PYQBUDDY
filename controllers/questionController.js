@@ -150,7 +150,7 @@ exports.getStatistics = async (req, res) => {
             'Statistics retrieved successfully',
             stats
         );
-
+ 
     } catch (error) {
         console.error('Get Statistics Error:', error);
         return response.errorResponse(res, error.message);

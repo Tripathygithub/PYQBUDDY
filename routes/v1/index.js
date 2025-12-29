@@ -3,6 +3,8 @@ var router = express.Router();
 
 var authRouter = require('./auth');
 var adminsRouter = require('./admin');
+var adminNewRouter = require('./adminNew');
+var adminSimplifiedRouter = require('./adminSimplified');
 var usersRouter = require('./user');
 var questionRouter = require('./question');
 var mediaRouter = require('./media');
@@ -22,6 +24,8 @@ router.use('/media', mediaRouter);
 router.use(middleware); 
 
 router.use('/admin', adminsRouter);
+router.use('/admin-v2', adminNewRouter);  // New question management system
+router.use('/admin-panel', adminSimplifiedRouter);  // Simplified admin panel (ACTIVE)
 router.use('/user', usersRouter);
 
 module.exports = router;

@@ -8,6 +8,11 @@ const JWT_REFRESH_EXPIRATION = process.env.JWT_REFRESH_EXPIRATION || '15m'; // 7
 const JWT_ISSUER = process.env.JWT_ISSUER || 'speak-sync-gateway';
 const JWT_AUDIENCE = process.env.JWT_AUDIENCE || 'speak-sync-api';
 
+// Debug log to verify .env is loaded
+console.log('JWT Configuration Loaded:');
+console.log('  ACCESS_EXPIRATION:', JWT_ACCESS_EXPIRATION);
+console.log('  REFRESH_EXPIRATION:', JWT_REFRESH_EXPIRATION);
+
 /**
  * Generate access token
  * @param {Object} payload - User data to encode in token

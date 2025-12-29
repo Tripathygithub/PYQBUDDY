@@ -27,6 +27,13 @@ const authMiddleware = async (req, res, next) => {
         try {
             const decoded = verifyAccessToken(token);
             
+            console.log('✓ Token verified successfully:', {
+                userId: decoded.userId,
+                email: decoded.email,
+                role: decoded.role,
+                exp: new Date(decoded.exp * 1000).toISOString()
+            });
+            
             // Attach user info to request
             req.user = {
                 userId: decoded.userId,
@@ -37,6 +44,10 @@ const authMiddleware = async (req, res, next) => {
 
             next();
         } catch (error) {
+            console.error('✗ Token verification failed:', {
+                error: error.message,
+                tokenPreview: token.substring(0, 20) + '...'
+            });
             return res.status(errorCode.authError).json({
                 success: false,
                 message: 'Invalid or expired token',
