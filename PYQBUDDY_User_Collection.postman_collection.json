@@ -1,52 +1,147 @@
 {
 	"info": {
-		"_postman_id": "user-collection-2025",
-		"name": "PYQBUDDY - User End Collection",
-		"description": "Complete API collection for end users to view, filter, and search questions. This collection includes all public endpoints without authentication requirements.",
+		"_postman_id": "user-collection-2025-authenticated",
+		"name": "PYQBUDDY - User Collection",
+		"description": "Complete API collection for authenticated users to register, login, and view questions. Users can filter and search questions but cannot create, update or delete them.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "pyqbuddy-user"
+		"_exporter_id": "pyqbuddy-user-auth"
 	},
 	"item": [
 		{
-			"name": "Questions",
+			"name": "Authentication",
 			"item": [
 				{
-					"name": "1. View All Questions (Basic)",
+					"name": "User Register",
 					"request": {
-						"method": "GET",
-						"header": [],
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"user@example.com\",\n  \"password\": \"password123\",\n  \"role\": \"user\"\n}"
+						},
 						"url": {
-							"raw": "{{BASE_URL}}/api/v1/questions/search",
+							"raw": "{{BASE_URL}}/api/v1/auth/signup",
 							"host": [
 								"{{BASE_URL}}"
 							],
 							"path": [
 								"api",
 								"v1",
-								"questions",
-								"search"
-							],
-							"query": []
+								"auth",
+								"signup"
+							]
 						},
-						"description": "Get all questions with default pagination (first 50 questions). No filters applied."
+						"description": "Register a new user account."
 					},
 					"response": []
 				},
 				{
-					"name": "2. View All Questions (Paginated)",
+					"name": "User Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Save token to environment variable automatically",
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.data && jsonData.data.token) {",
+									"        pm.environment.set(\"AUTH_TOKEN\", jsonData.data.token);",
+									"        console.log(\"Token saved to environment:\", jsonData.data.token);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
-						"method": "GET",
-						"header": [],
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"password123\"\n}"
+						},
 						"url": {
-							"raw": "{{BASE_URL}}/api/v1/questions/search?page=1&limit=20",
+							"raw": "{{BASE_URL}}/api/v1/auth/login",
 							"host": [
 								"{{BASE_URL}}"
 							],
 							"path": [
 								"api",
 								"v1",
-								"questions",
-								"search"
+								"auth",
+								"login"
+							]
+						},
+						"description": "Login to get authentication token. Token will be automatically saved to AUTH_TOKEN environment variable."
+					},
+					"response": []
+				}
+			],
+			"description": "User authentication endpoints for registration and login."
+		},
+		{
+			"name": "Questions",
+			"item": [
+				{
+					"name": "Get All Questions",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/api/v1/user/questions",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"user",
+								"questions"
+							]
+						},
+						"description": "Get all questions with default pagination (first 20 questions). Requires authentication."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Questions with Pagination",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/api/v1/user/questions?page=1&limit=20",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"user",
+								"questions"
 							],
 							"query": [
 								{
@@ -57,57 +152,35 @@
 								{
 									"key": "limit",
 									"value": "20",
-									"description": "Items per page (max: 100, default: 50)"
+									"description": "Items per page (default: 20)"
 								}
 							]
 						},
-						"description": "Get all questions with custom pagination. Adjust page and limit parameters as needed."
+						"description": "Get questions with custom pagination."
 					},
 					"response": []
 				},
 				{
-					"name": "3. Search Questions by Keyword",
+					"name": "Filter by Year",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
 						"url": {
-							"raw": "{{BASE_URL}}/api/v1/questions/search?keyword=constitution",
+							"raw": "{{BASE_URL}}/api/v1/user/questions?year=2021",
 							"host": [
 								"{{BASE_URL}}"
 							],
 							"path": [
 								"api",
 								"v1",
-								"questions",
-								"search"
-							],
-							"query": [
-								{
-									"key": "keyword",
-									"value": "constitution",
-									"description": "Search keyword (searches in question text and options)"
-								}
-							]
-						},
-						"description": "Search questions using keywords. Searches through question text, options, and explanations."
-					},
-					"response": []
-				},
-				{
-					"name": "4. Filter Questions by Year",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{BASE_URL}}/api/v1/questions/search?year=2021",
-							"host": [
-								"{{BASE_URL}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"questions",
-								"search"
+								"user",
+								"questions"
 							],
 							"query": [
 								{
@@ -117,60 +190,31 @@
 								}
 							]
 						},
-						"description": "Filter questions by a specific year."
+						"description": "Filter questions by year."
 					},
 					"response": []
 				},
 				{
-					"name": "5. Filter Questions by Multiple Years",
+					"name": "Filter by Exam Type",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
 						"url": {
-							"raw": "{{BASE_URL}}/api/v1/questions/search?year=2021&year=2022&year=2023",
+							"raw": "{{BASE_URL}}/api/v1/user/questions?examType=prelims",
 							"host": [
 								"{{BASE_URL}}"
 							],
 							"path": [
 								"api",
 								"v1",
-								"questions",
-								"search"
-							],
-							"query": [
-								{
-									"key": "year",
-									"value": "2021"
-								},
-								{
-									"key": "year",
-									"value": "2022"
-								},
-								{
-									"key": "year",
-									"value": "2023"
-								}
-							]
-						},
-						"description": "Filter questions by multiple years."
-					},
-					"response": []
-				},
-				{
-					"name": "6. Filter Questions by Exam Type",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{BASE_URL}}/api/v1/questions/search?examType=prelims",
-							"host": [
-								"{{BASE_URL}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"questions",
-								"search"
+								"user",
+								"questions"
 							],
 							"query": [
 								{
@@ -180,25 +224,31 @@
 								}
 							]
 						},
-						"description": "Filter questions by exam type (e.g., prelims, mains)."
+						"description": "Filter questions by exam type."
 					},
 					"response": []
 				},
 				{
-					"name": "7. Filter Questions by Subject",
+					"name": "Filter by Subject",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
 						"url": {
-							"raw": "{{BASE_URL}}/api/v1/questions/search?subject=Polity",
+							"raw": "{{BASE_URL}}/api/v1/user/questions?subject=Polity",
 							"host": [
 								"{{BASE_URL}}"
 							],
 							"path": [
 								"api",
 								"v1",
-								"questions",
-								"search"
+								"user",
+								"questions"
 							],
 							"query": [
 								{
@@ -208,272 +258,151 @@
 								}
 							]
 						},
-						"description": "Filter questions by a specific subject."
+						"description": "Filter questions by subject."
 					},
 					"response": []
 				},
 				{
-					"name": "8. Filter Questions by Multiple Subjects",
+					"name": "Filter by Topic",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
 						"url": {
-							"raw": "{{BASE_URL}}/api/v1/questions/search?subject=Polity&subject=History",
+							"raw": "{{BASE_URL}}/api/v1/user/questions?topic=Constitution",
 							"host": [
 								"{{BASE_URL}}"
 							],
 							"path": [
 								"api",
 								"v1",
-								"questions",
-								"search"
-							],
-							"query": [
-								{
-									"key": "subject",
-									"value": "Polity"
-								},
-								{
-									"key": "subject",
-									"value": "History"
-								}
-							]
-						},
-						"description": "Filter questions by multiple subjects."
-					},
-					"response": []
-				},
-				{
-					"name": "9. Filter Questions by Topic",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{BASE_URL}}/api/v1/questions/search?topic=Constitution",
-							"host": [
-								"{{BASE_URL}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"questions",
-								"search"
+								"user",
+								"questions"
 							],
 							"query": [
 								{
 									"key": "topic",
 									"value": "Constitution",
-									"description": "Filter by specific topic"
-								}
-							]
-						},
-						"description": "Filter questions by a specific topic."
-					},
-					"response": []
-				},
-				{
-					"name": "10. Filter Questions by Difficulty",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{BASE_URL}}/api/v1/questions/search?difficulty=medium",
-							"host": [
-								"{{BASE_URL}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"questions",
-								"search"
-							],
-							"query": [
-								{
-									"key": "difficulty",
-									"value": "medium",
-									"description": "Filter by difficulty level (easy, medium, hard)"
-								}
-							]
-						},
-						"description": "Filter questions by difficulty level (easy, medium, hard)."
-					},
-					"response": []
-				},
-				{
-					"name": "11. Combined Filters (Year + Exam Type + Subject)",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{BASE_URL}}/api/v1/questions/search?year=2021&examType=prelims&subject=Polity",
-							"host": [
-								"{{BASE_URL}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"questions",
-								"search"
-							],
-							"query": [
-								{
-									"key": "year",
-									"value": "2021",
-									"description": "Filter by year"
-								},
-								{
-									"key": "examType",
-									"value": "prelims",
-									"description": "Filter by exam type"
-								},
-								{
-									"key": "subject",
-									"value": "Polity",
-									"description": "Filter by subject"
-								}
-							]
-						},
-						"description": "Combine multiple filters: year, exam type, and subject."
-					},
-					"response": []
-				},
-				{
-					"name": "12. Advanced Search with All Filters",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{BASE_URL}}/api/v1/questions/search?keyword=constitution&year=2021&examType=prelims&subject=Polity&topic=Fundamental Rights&difficulty=medium&page=1&limit=20",
-							"host": [
-								"{{BASE_URL}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"questions",
-								"search"
-							],
-							"query": [
-								{
-									"key": "keyword",
-									"value": "constitution",
-									"description": "Search keyword"
-								},
-								{
-									"key": "year",
-									"value": "2021",
-									"description": "Filter by year"
-								},
-								{
-									"key": "examType",
-									"value": "prelims",
-									"description": "Filter by exam type"
-								},
-								{
-									"key": "subject",
-									"value": "Polity",
-									"description": "Filter by subject"
-								},
-								{
-									"key": "topic",
-									"value": "Fundamental Rights",
 									"description": "Filter by topic"
-								},
+								}
+							]
+						},
+						"description": "Filter questions by topic."
+					},
+					"response": []
+				},
+				{
+					"name": "Filter by Difficulty",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/api/v1/user/questions?difficulty=medium",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"user",
+								"questions"
+							],
+							"query": [
 								{
 									"key": "difficulty",
 									"value": "medium",
-									"description": "Filter by difficulty"
+									"description": "Filter by difficulty (easy, medium, hard)"
+								}
+							]
+						},
+						"description": "Filter questions by difficulty level."
+					},
+					"response": []
+				},
+				{
+					"name": "Combined Filters",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/api/v1/user/questions?year=2021&examType=prelims&subject=Polity&difficulty=medium&page=1&limit=20",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"user",
+								"questions"
+							],
+							"query": [
+								{
+									"key": "year",
+									"value": "2021"
+								},
+								{
+									"key": "examType",
+									"value": "prelims"
+								},
+								{
+									"key": "subject",
+									"value": "Polity"
+								},
+								{
+									"key": "difficulty",
+									"value": "medium"
 								},
 								{
 									"key": "page",
-									"value": "1",
-									"description": "Page number"
+									"value": "1"
 								},
 								{
 									"key": "limit",
-									"value": "20",
-									"description": "Items per page"
+									"value": "20"
 								}
 							]
 						},
-						"description": "Advanced search with keyword and all available filters combined."
+						"description": "Combine multiple filters: year, exam type, subject, and difficulty."
 					},
 					"response": []
 				},
 				{
-					"name": "13. Search with Custom Sorting (Year)",
+					"name": "Get Single Question by ID",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
 						"url": {
-							"raw": "{{BASE_URL}}/api/v1/questions/search?sortBy=year&sortOrder=asc",
+							"raw": "{{BASE_URL}}/api/v1/user/questions/:id",
 							"host": [
 								"{{BASE_URL}}"
 							],
 							"path": [
 								"api",
 								"v1",
-								"questions",
-								"search"
-							],
-							"query": [
-								{
-									"key": "sortBy",
-									"value": "year",
-									"description": "Sort by field (year, difficulty, viewCount)"
-								},
-								{
-									"key": "sortOrder",
-									"value": "asc",
-									"description": "Sort order (asc or desc)"
-								}
-							]
-						},
-						"description": "Sort questions by year in ascending order."
-					},
-					"response": []
-				},
-				{
-					"name": "14. Search Questions with Answers Only",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{BASE_URL}}/api/v1/questions/search?hasAnswer=true",
-							"host": [
-								"{{BASE_URL}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"questions",
-								"search"
-							],
-							"query": [
-								{
-									"key": "hasAnswer",
-									"value": "true",
-									"description": "Filter questions that have answers (true/false)"
-								}
-							]
-						},
-						"description": "Get only questions that have answers/explanations."
-					},
-					"response": []
-				},
-				{
-					"name": "15. Get Single Question by ID",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{BASE_URL}}/api/v1/questions/:id",
-							"host": [
-								"{{BASE_URL}}"
-							],
-							"path": [
-								"api",
-								"v1",
+								"user",
 								"questions",
 								":id"
 							],
@@ -490,168 +419,257 @@
 					"response": []
 				},
 				{
-					"name": "16. Get Random Question",
+					"name": "Search Questions",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
 						"url": {
-							"raw": "{{BASE_URL}}/api/v1/questions/random",
+							"raw": "{{BASE_URL}}/api/v1/user/questions/search?q=constitution",
 							"host": [
 								"{{BASE_URL}}"
 							],
 							"path": [
 								"api",
 								"v1",
+								"user",
 								"questions",
-								"random"
+								"search"
+							],
+							"query": [
+								{
+									"key": "q",
+									"value": "constitution",
+									"description": "Search query (searches in question text, explanation, subject, topic, exam name, tags)"
+								}
 							]
 						},
-						"description": "Get a random question from the database (useful for practice mode)."
+						"description": "Search questions using a keyword. Uses smart regex matching with word variations."
 					},
 					"response": []
 				},
 				{
-					"name": "17. Get Random Question with Filters",
+					"name": "Search with Pagination",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
 						"url": {
-							"raw": "{{BASE_URL}}/api/v1/questions/random?examType=prelims&subject=Polity",
+							"raw": "{{BASE_URL}}/api/v1/user/questions/search?q=polity&page=1&limit=20",
 							"host": [
 								"{{BASE_URL}}"
 							],
 							"path": [
 								"api",
 								"v1",
+								"user",
 								"questions",
-								"random"
+								"search"
 							],
 							"query": [
 								{
+									"key": "q",
+									"value": "polity"
+								},
+								{
+									"key": "page",
+									"value": "1",
+									"description": "Page number"
+								},
+								{
+									"key": "limit",
+									"value": "20",
+									"description": "Items per page"
+								}
+							]
+						},
+						"description": "Search with custom pagination."
+					},
+					"response": []
+				},
+				{
+					"name": "Search + Filter by Year",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/api/v1/user/questions/search?q=agriculture&year=2021",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"user",
+								"questions",
+								"search"
+							],
+							"query": [
+								{
+									"key": "q",
+									"value": "agriculture"
+								},
+								{
+									"key": "year",
+									"value": "2021",
+									"description": "Filter search results by year"
+								}
+							]
+						},
+						"description": "Search questions and filter by year."
+					},
+					"response": []
+				},
+				{
+					"name": "Search + Filter by Exam Type",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/api/v1/user/questions/search?q=economy&examType=prelims",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"user",
+								"questions",
+								"search"
+							],
+							"query": [
+								{
+									"key": "q",
+									"value": "economy"
+								},
+								{
 									"key": "examType",
 									"value": "prelims",
-									"description": "Filter random question by exam type"
+									"description": "Filter search results by exam type"
+								}
+							]
+						},
+						"description": "Search questions and filter by exam type."
+					},
+					"response": []
+				},
+				{
+					"name": "Search + Filter by Subject",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/api/v1/user/questions/search?q=fundamental rights&subject=Polity",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"user",
+								"questions",
+								"search"
+							],
+							"query": [
+								{
+									"key": "q",
+									"value": "fundamental rights"
 								},
 								{
 									"key": "subject",
 									"value": "Polity",
-									"description": "Filter random question by subject"
+									"description": "Filter search results by subject"
 								}
 							]
 						},
-						"description": "Get a random question filtered by specific criteria."
-					},
-					"response": []
-				}
-			],
-			"description": "All endpoints for viewing, searching, and filtering questions."
-		},
-		{
-			"name": "Filter Options & Statistics",
-			"item": [
-				{
-					"name": "1. Get All Filter Options",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{BASE_URL}}/api/v1/questions/filters/options",
-							"host": [
-								"{{BASE_URL}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"questions",
-								"filters",
-								"options"
-							]
-						},
-						"description": "Get all available filter options including:\n- Years\n- Subjects\n- Topics\n- Exam Types\n\nUse this to populate filter dropdowns in your UI."
+						"description": "Search questions and filter by subject."
 					},
 					"response": []
 				},
 				{
-					"name": "2. Get Question Statistics",
+					"name": "Advanced Search with Multiple Filters",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
 						"url": {
-							"raw": "{{BASE_URL}}/api/v1/questions/statistics",
+							"raw": "{{BASE_URL}}/api/v1/user/questions/search?q=constitution&year=2021&examType=prelims&subject=Polity&page=1&limit=20",
 							"host": [
 								"{{BASE_URL}}"
 							],
 							"path": [
 								"api",
 								"v1",
+								"user",
 								"questions",
-								"statistics"
-							]
-						},
-						"description": "Get overall statistics about questions:\n- Total questions count\n- Questions by year\n- Questions by subject\n- Questions by exam type\n- Questions by difficulty"
-					},
-					"response": []
-				}
-			],
-			"description": "Endpoints to get filter options and statistics for the question database."
-		},
-		{
-			"name": "Subjects & Topics",
-			"item": [
-				{
-					"name": "1. Get All Subjects with Topics",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{BASE_URL}}/api/v1/questions/subjects/all",
-							"host": [
-								"{{BASE_URL}}"
+								"search"
 							],
-							"path": [
-								"api",
-								"v1",
-								"questions",
-								"subjects",
-								"all"
-							]
-						},
-						"description": "Get all subjects along with their associated topics."
-					},
-					"response": []
-				},
-				{
-					"name": "2. Get Topics for Specific Subject",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{BASE_URL}}/api/v1/questions/subjects/:name/topics",
-							"host": [
-								"{{BASE_URL}}"
-							],
-							"path": [
-								"api",
-								"v1",
-								"questions",
-								"subjects",
-								":name",
-								"topics"
-							],
-							"variable": [
+							"query": [
 								{
-									"key": "name",
-									"value": "Polity",
-									"description": "Subject name (e.g., Polity, History, Geography)"
+									"key": "q",
+									"value": "constitution"
+								},
+								{
+									"key": "year",
+									"value": "2021"
+								},
+								{
+									"key": "examType",
+									"value": "prelims"
+								},
+								{
+									"key": "subject",
+									"value": "Polity"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "20"
 								}
 							]
 						},
-						"description": "Get all topics for a specific subject."
+						"description": "Advanced search combining search query with multiple filters."
 					},
 					"response": []
 				}
 			],
-			"description": "Endpoints to get subjects and topics information."
+			"description": "View, filter, and search questions. All endpoints require authentication."
 		}
 	],
 	"event": [
@@ -677,7 +695,699 @@
 	"variable": [
 		{
 			"key": "BASE_URL",
-			"value": "http://localhost:3000",
+			"value": "http://localhost:9235",
+			"type": "string"
+		},
+		{
+			"key": "AUTH_TOKEN",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/api/v1/admin-panel/questions",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"admin-panel",
+								"questions"
+							]
+						},
+						"description": "Get all questions with default pagination (first 20 questions). Requires authentication."
+					},
+					"response": []
+				},
+				{
+					"name": "2. Get All Questions (Paginated)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/api/v1/admin-panel/questions?page=1&limit=20",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"admin-panel",
+								"questions"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1",
+									"description": "Page number (default: 1)"
+								},
+								{
+									"key": "limit",
+									"value": "20",
+									"description": "Items per page (default: 20)"
+								}
+							]
+						},
+						"description": "Get all questions with custom pagination."
+					},
+					"response": []
+				},
+				{
+					"name": "3. Filter by Year",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/api/v1/admin-panel/questions?year=2021",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"admin-panel",
+								"questions"
+							],
+							"query": [
+								{
+									"key": "year",
+									"value": "2021",
+									"description": "Filter by specific year"
+								}
+							]
+						},
+						"description": "Filter questions by year."
+					},
+					"response": []
+				},
+				{
+					"name": "4. Filter by Exam Type",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/api/v1/admin-panel/questions?examType=prelims",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"admin-panel",
+								"questions"
+							],
+							"query": [
+								{
+									"key": "examType",
+									"value": "prelims",
+									"description": "Filter by exam type (prelims, mains, etc.)"
+								}
+							]
+						},
+						"description": "Filter questions by exam type."
+					},
+					"response": []
+				},
+				{
+					"name": "5. Filter by Subject",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/api/v1/admin-panel/questions?subject=Polity",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"admin-panel",
+								"questions"
+							],
+							"query": [
+								{
+									"key": "subject",
+									"value": "Polity",
+									"description": "Filter by subject name"
+								}
+							]
+						},
+						"description": "Filter questions by subject."
+					},
+					"response": []
+				},
+				{
+					"name": "6. Filter by Topic",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/api/v1/admin-panel/questions?topic=Constitution",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"admin-panel",
+								"questions"
+							],
+							"query": [
+								{
+									"key": "topic",
+									"value": "Constitution",
+									"description": "Filter by topic"
+								}
+							]
+						},
+						"description": "Filter questions by topic."
+					},
+					"response": []
+				},
+				{
+					"name": "7. Filter by Difficulty",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/api/v1/admin-panel/questions?difficulty=medium",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"admin-panel",
+								"questions"
+							],
+							"query": [
+								{
+									"key": "difficulty",
+									"value": "medium",
+									"description": "Filter by difficulty (easy, medium, hard)"
+								}
+							]
+						},
+						"description": "Filter questions by difficulty level."
+					},
+					"response": []
+				},
+				{
+					"name": "8. Filter by Verification Status",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/api/v1/admin-panel/questions?isVerified=true",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"admin-panel",
+								"questions"
+							],
+							"query": [
+								{
+									"key": "isVerified",
+									"value": "true",
+									"description": "Filter by verification status (true/false)"
+								}
+							]
+						},
+						"description": "Get only verified questions."
+					},
+					"response": []
+				},
+				{
+					"name": "9. Combined Filters",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/api/v1/admin-panel/questions?year=2021&examType=prelims&subject=Polity&difficulty=medium&isVerified=true&page=1&limit=20",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"admin-panel",
+								"questions"
+							],
+							"query": [
+								{
+									"key": "year",
+									"value": "2021"
+								},
+								{
+									"key": "examType",
+									"value": "prelims"
+								},
+								{
+									"key": "subject",
+									"value": "Polity"
+								},
+								{
+									"key": "difficulty",
+									"value": "medium"
+								},
+								{
+									"key": "isVerified",
+									"value": "true"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "20"
+								}
+							]
+						},
+						"description": "Combine multiple filters: year, exam type, subject, difficulty, and verification status."
+					},
+					"response": []
+				},
+				{
+					"name": "10. Get Single Question by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/api/v1/admin-panel/questions/:id",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"admin-panel",
+								"questions",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "60d5ec49f1a2c8b1f8e4e5a1",
+									"description": "Question ID (MongoDB ObjectId)"
+								}
+							]
+						},
+						"description": "Get detailed information about a specific question by its ID."
+					},
+					"response": []
+				}
+			],
+			"description": "View and filter questions using various criteria."
+		},
+		{
+			"name": "Questions - Search",
+			"item": [
+				{
+					"name": "1. Search Questions (Basic)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/api/v1/admin-panel/questions/search?q=constitution",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"admin-panel",
+								"questions",
+								"search"
+							],
+							"query": [
+								{
+									"key": "q",
+									"value": "constitution",
+									"description": "Search query (searches in question text, explanation, subject, topic, exam name, tags)"
+								}
+							]
+						},
+						"description": "Search questions using a keyword. Uses smart regex matching with word variations."
+					},
+					"response": []
+				},
+				{
+					"name": "2. Search with Pagination",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/api/v1/admin-panel/questions/search?q=polity&page=1&limit=20",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"admin-panel",
+								"questions",
+								"search"
+							],
+							"query": [
+								{
+									"key": "q",
+									"value": "polity"
+								},
+								{
+									"key": "page",
+									"value": "1",
+									"description": "Page number"
+								},
+								{
+									"key": "limit",
+									"value": "20",
+									"description": "Items per page"
+								}
+							]
+						},
+						"description": "Search with custom pagination."
+					},
+					"response": []
+				},
+				{
+					"name": "3. Search + Filter by Year",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/api/v1/admin-panel/questions/search?q=agriculture&year=2021",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"admin-panel",
+								"questions",
+								"search"
+							],
+							"query": [
+								{
+									"key": "q",
+									"value": "agriculture"
+								},
+								{
+									"key": "year",
+									"value": "2021",
+									"description": "Filter search results by year"
+								}
+							]
+						},
+						"description": "Search questions and filter by year."
+					},
+					"response": []
+				},
+				{
+					"name": "4. Search + Filter by Exam Type",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/api/v1/admin-panel/questions/search?q=economy&examType=prelims",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"admin-panel",
+								"questions",
+								"search"
+							],
+							"query": [
+								{
+									"key": "q",
+									"value": "economy"
+								},
+								{
+									"key": "examType",
+									"value": "prelims",
+									"description": "Filter search results by exam type"
+								}
+							]
+						},
+						"description": "Search questions and filter by exam type."
+					},
+					"response": []
+				},
+				{
+					"name": "5. Search + Filter by Subject",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/api/v1/admin-panel/questions/search?q=fundamental rights&subject=Polity",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"admin-panel",
+								"questions",
+								"search"
+							],
+							"query": [
+								{
+									"key": "q",
+									"value": "fundamental rights"
+								},
+								{
+									"key": "subject",
+									"value": "Polity",
+									"description": "Filter search results by subject"
+								}
+							]
+						},
+						"description": "Search questions and filter by subject."
+					},
+					"response": []
+				},
+				{
+					"name": "6. Advanced Search with All Filters",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/api/v1/admin-panel/questions/search?q=constitution&year=2021&examType=prelims&subject=Polity&page=1&limit=20",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"admin-panel",
+								"questions",
+								"search"
+							],
+							"query": [
+								{
+									"key": "q",
+									"value": "constitution"
+								},
+								{
+									"key": "year",
+									"value": "2021"
+								},
+								{
+									"key": "examType",
+									"value": "prelims"
+								},
+								{
+									"key": "subject",
+									"value": "Polity"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "20"
+								}
+							]
+						},
+						"description": "Advanced search combining search query with multiple filters."
+					},
+					"response": []
+				}
+			],
+			"description": "Search questions with smart regex matching and filters."
+		},
+		{
+			"name": "Statistics & Info",
+			"item": [
+				{
+					"name": "1. Get Question Statistics",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{AUTH_TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/api/v1/admin-panel/questions/statistics",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"admin-panel",
+								"questions",
+								"statistics"
+							]
+						},
+						"description": "Get comprehensive statistics about questions:\n- Total questions\n- Questions by year\n- Questions by subject\n- Questions by exam type\n- Questions by difficulty\n- Questions by topic"
+					},
+					"response": []
+				}
+			],
+			"description": "Get statistics and information about the question database."
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "BASE_URL",
+			"value": "http://localhost:9235",
+			"type": "string"
+		},
+		{
+			"key": "AUTH_TOKEN",
+			"value": "",
 			"type": "string"
 		}
 	]

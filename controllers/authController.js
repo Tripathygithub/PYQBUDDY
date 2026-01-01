@@ -297,7 +297,7 @@ const logoutAll = async (req, res) => {
 const getProfile = async (req, res) => {
     try {
         const userId = req.user?.userId;
-
+        console.log('Getting profile for userId:', userId);
         if (!userId) {
             return res.status(errorCode.authError).json({
                 success: false,
@@ -306,6 +306,7 @@ const getProfile = async (req, res) => {
         }
 
         const user = await User.findOne({ id: userId });
+        console.log('------------->',user)
         if (!user) {
             return res.status(errorCode.authError).json({
                 success: false,
