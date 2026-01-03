@@ -3,8 +3,8 @@ const jwt = require('jsonwebtoken');
 // JWT Configuration
 const JWT_ACCESS_SECRET = process.env.JWT_ACCESS_SECRET || 'your-access-token-secret-key';
 const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || 'your-refresh-token-secret-key';
-const JWT_ACCESS_EXPIRATION = process.env.JWT_ACCESS_EXPIRATION || '5m'; // 5 minutes
-const JWT_REFRESH_EXPIRATION = process.env.JWT_REFRESH_EXPIRATION || '15m'; // 7 days
+const JWT_ACCESS_EXPIRATION = process.env.JWT_ACCESS_EXPIRATION || '3d'; // 5 minutes
+const JWT_REFRESH_EXPIRATION = process.env.JWT_REFRESH_EXPIRATION || '7d'; // 7 days
 const JWT_ISSUER = process.env.JWT_ISSUER || 'speak-sync-gateway';
 const JWT_AUDIENCE = process.env.JWT_AUDIENCE || 'speak-sync-api';
 
